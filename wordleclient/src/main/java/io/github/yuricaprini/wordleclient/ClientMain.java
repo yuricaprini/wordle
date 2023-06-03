@@ -19,8 +19,10 @@ public class ClientMain {
       configName = args[0];
     }
 
-    if (args.length > 1)
+    if (args.length > 1){
       System.err.println(CLIMessages.getString("USAGE"));
+      System.exit(1);
+    }
 
     Client client = new Client(CLIMessages);
     
