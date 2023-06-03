@@ -1,4 +1,5 @@
-package io.github.yuricaprini.winsomeclient;
+package io.github.yuricaprini.wordleclient;
+
 
 public class ClientConfiguration {
 
