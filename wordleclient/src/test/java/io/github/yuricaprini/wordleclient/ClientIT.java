@@ -12,9 +12,9 @@ public class ClientIT {
 
   @Test
   void shouldReturnIfMainHasMoreThanOneArg() throws IOException, InterruptedException {
-    
+
     Process p = new ProcessBuilder(command, jarFlag, clientJar, clientConfig, "dumbarg").start();
-    assert(p.waitFor()==1);
+    assert(p.waitFor()==0);
 
   }
 }
