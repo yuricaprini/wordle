@@ -41,10 +41,12 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
+
           <execution>
             <phase>package</phase>
             <goals>
@@ -68,6 +70,23 @@
                   <targetPath>/</targetPath>
                 </resource>
               </resources>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>io.github.yuricaprini.wordleclient.MockServer</mainClass>
+                </manifest>
+              </archive>
+              <descriptor>/src/assembly/test-jar-with-dependecies.xml</descriptor>
+              <finalName>mockserver-executable</finalName>
             </configuration>
           </execution>
         </executions>

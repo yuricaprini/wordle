@@ -2,40 +2,49 @@ package io.github.yuricaprini.winsomeprotocol.remoteinterfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import io.github.yuricaprini.winsomeprotocol.exceptions.CannotRegisterUserException;
 
 /**
- * A <code>UserRegistrationRemoteService</code> is the RMI remote interface responsible for
- * declaring the essential methods required for user registration in the Wordle application.
+ * A {@code UserRegistrationRemoteService} is the RMI remote interface responsible for
+ * declaring the essential methods required for user registration into Wordle application.
  */
 public interface UserRegistrationRemoteService extends Remote {
 
   /**
-   * Registers a new user to Wordle.
-   * 
-   * @param username the username required for user registration to Wordle
-   * @param password the password required for user registration to Wordle
-   * @return <code>true</code> if the registration was successful, <code>false</code> otherwise
-   * @throws NullPointerException if <code> username==null || password==null
-   * @throws CannotRegisterUserException if <code> username.length()<6 || username.length()>8 || 
-   *         username.contains(" ") || password.length()<8 || password.length()>16 || 
-   *         password.contains(" ") || password has no uppercase || password has no digit || 
-   *          </code> a user with the same username is already registered to Wordle
-   * @throws RemoteException if a communication error occurs during the execution of the remote call
-   */
-  public RegisterUserOutcomeCode registerUser(String username, String password, String[] tags)
-      throws RemoteException;
+  * Registers a new user to Wordle.
+  * 
+  * @param username the username required for user registration to Wordle
+  * @param password the password required for user registration to Wordle
+  * @return the outcome code of the user registration attempt, which can be one of the following:
+  *         <ul>
+  *           <li>{@link RegistrationOutcome#OK} if the registration successfull</li>
+  *           <li>{@link RegistrationOutcome#USERNAME_SHORT} if {@code username.length()<6} </li>
+  *           <li>{@link RegistrationOutcome#USERNAME_LONG} if {@code username.length()>8}</li>
+  *           <li>{@link RegistrationOutcome#USERNAME_SPACE} if {@code username.contains(" ")}</li>
+  *           <li>{@link RegistrationOutcome#PASSWORD_SHORT} if {@code password.length()<8}</li>
+  *           <li>{@link RegistrationOutcome#PASSWORD_LONG} if {@code password.length()>16}</li>
+  *           <li>{@link RegistrationOutcome#PASSWORD_SPACE} if {@code password.contains(" ")}</li>
+  *           <li>{@link RegistrationOutcome#PASSWORD_NO_DIGIT} if password has no digit</li>
+  *           <li>{@link RegistrationOutcome#PASSWORD_NO_UC} if password has no uppercase</li>
+  *           <li>{@link RegistrationOutcome#ALREADY_REGISTERED} if username already registered</li>
+  *         </ul>
+  * @throws NullPointerException if {@code username == null} or {@code password == null}
+  * @throws RemoteException if a communication error occurs during the execution of the remote call
+  */
+  public RegistrationOutcome registerUser(String username, String password) throws RemoteException;
 
   /**
-   * An abstract factory for <code>UserRegistrationRemoteService</code>.
-   */
+  * An abstract factory for creating instances of {@code UserRegistrationRemoteService}.
+  */
   public interface Factory {
     public UserRegistrationRemoteService createUserRegistrationRemoteService();
   }
 
-  public enum RegisterUserOutcomeCode {
+  /**
+  * A {@code RegistrationOutcome} represents the possible outcomes of a user registration attempt.
+  */
+  public enum RegistrationOutcome {
 
-    REGISTRATION_OK, USERNAME_TOO_SHORT, USERNAME_TOO_LONG, USERNAME_CONTAINS_WHITESPACE, PASSWORD_TOO_SHORT, PASSWORD_TOO_LONG, PASSWORD_CONTAINS_WHITESPACE, PASSWORD_NO_DIGIT, PASSWORD_NO_UPPERCASE, ALREADY_REGISTERED_USER
+    OK, USERNAME_SHORT, USERNAME_LONG, USERNAME_SPACE, PASSWORD_SHORT, PASSWORD_LONG, PASSWORD_SPACE, PASSWORD_NO_DIGIT, PASSWORD_NO_UC, ALREADY_REGISTERED
 
   }
 

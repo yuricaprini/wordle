@@ -1,6 +1,8 @@
 package io.github.yuricaprini.wordleclient;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class ClientMain {
@@ -19,23 +21,29 @@ public class ClientMain {
       configName = args[0];
     }
 
-    if (args.length > 1){
-      System.err.println(CLIMessages.getString("USAGE"));
+    if (args.length > 1) {
+      System.err.println(CLIMessages.getString("ERR_USAGE"));
       System.exit(1);
     }
 
     Client client = new Client(CLIMessages);
-    
+
     try {
       client.loadConfiguration(isCustomConfig, configName);
     } catch (NullPointerException | IOException e) {
-      System.err.println(CLIMessages.getString("CONFIG_LOAD_FAIL"));
+      System.err.println(CLIMessages.getString("ERR_CONFIG_LOAD_FAIL"));
       e.printStackTrace();
       System.exit(1);
     }
 
-    client.loadRemoteServices();
+    System.out.println(CLIMessages.getString("OUT_CLIENT_RUNNING"));
 
-    client.executeInteractiveLoop();
+    try {
+      client.executeInteractiveLoop();
+    } catch (RemoteException | NotBoundException e) {
+      System.err.println(CLIMessages.getString("ERR_CONNECTION_TO_REMOTE_SERVICE_FAIL"));
+      e.printStackTrace();
+      System.exit(1);
+    }
   }
 }
