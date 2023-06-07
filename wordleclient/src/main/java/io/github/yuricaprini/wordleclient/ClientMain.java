@@ -7,12 +7,12 @@ import java.util.ResourceBundle;
 
 public class ClientMain {
 
-  private static final String DEFAULTBUNDLENAME = "CLIMessages";
+  private static final String DEFAULTBUNDLENAME = "CLIClientMessages";
   private static final String DEFAULTCONFIGNAME = "client_config.json";
 
   public static void main(String[] args) {
 
-    ResourceBundle CLIMessages = ResourceBundle.getBundle(DEFAULTBUNDLENAME);
+    ResourceBundle CLIClientMessages = ResourceBundle.getBundle(DEFAULTBUNDLENAME);
     boolean isCustomConfig = false;
     String configName = DEFAULTCONFIGNAME;
 
@@ -22,26 +22,26 @@ public class ClientMain {
     }
 
     if (args.length > 1) {
-      System.err.println(CLIMessages.getString("ERR_USAGE"));
+      System.err.println(CLIClientMessages.getString("ERR_USAGE"));
       System.exit(1);
     }
 
-    Client client = new Client(CLIMessages);
+    Client client = new Client(CLIClientMessages);
 
     try {
       client.loadConfiguration(isCustomConfig, configName);
     } catch (NullPointerException | IOException e) {
-      System.err.println(CLIMessages.getString("ERR_CONFIG_LOAD_FAIL"));
+      System.err.println(CLIClientMessages.getString("ERR_CONFIG_LOAD_FAIL"));
       e.printStackTrace();
       System.exit(1);
     }
 
-    System.out.println(CLIMessages.getString("OUT_CLIENT_RUNNING"));
+    System.out.println(CLIClientMessages.getString("OUT_CLIENT_RUNNING"));
 
     try {
       client.executeInteractiveLoop();
     } catch (RemoteException | NotBoundException e) {
-      System.err.println(CLIMessages.getString("ERR_CONNECTION_TO_REMOTE_SERVICE_FAIL"));
+      System.err.println(CLIClientMessages.getString("ERR_CONNECTION_TO_REMOTE_SERVICE_FAIL"));
       e.printStackTrace();
       System.exit(1);
     }

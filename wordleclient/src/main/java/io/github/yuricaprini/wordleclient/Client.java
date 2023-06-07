@@ -20,11 +20,11 @@ import io.github.yuricaprini.winsomeprotocol.remoteinterfaces.UserRegistrationRe
 public class Client {
 
   private ClientConfiguration clientConfig;
-  private ResourceBundle CLIMessages;
+  private ResourceBundle CLIClientMessages;
   private UserRegistrationRemoteService registrationService;
 
-  public Client(ResourceBundle CLIMessages) {
-    this.CLIMessages = CLIMessages;
+  public Client(ResourceBundle CLIClientMessages) {
+    this.CLIClientMessages = CLIClientMessages;
   }
 
   public void loadConfiguration(boolean isCustomConfig, String configName)
@@ -63,7 +63,7 @@ public class Client {
           case "register":
 
             if (commandArgs.length != 2)
-              System.err.println(CLIMessages.getString("ERR_REGISTER_N_ARGS"));
+              System.err.println(CLIClientMessages.getString("ERR_REGISTER_N_ARGS"));
             else {
 
               if (this.registrationService == null) {
@@ -74,37 +74,38 @@ public class Client {
 
               switch (this.registrationService.registerUser(commandArgs[0], commandArgs[1])) {
                 case OK:
-                  System.out.println(CLIMessages.getString("OUT_REGISTER_OK"));
+                  System.out.println(CLIClientMessages.getString("OUT_REGISTER_OK"));
                   break;
                 case USERNAME_SHORT:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_USERNAME_SHORT"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_USERNAME_SHORT"));
                   break;
                 case USERNAME_LONG:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_USERNAME_LONG"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_USERNAME_LONG"));
                   break;
                 case USERNAME_SPACE:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_USERNAME_SPACE"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_USERNAME_SPACE"));
                   break;
                 case PASSWORD_SHORT:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_PASSWORD_SHORT"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_PASSWORD_SHORT"));
                   break;
                 case PASSWORD_LONG:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_PASSWORD_LONG"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_PASSWORD_LONG"));
                   break;
                 case PASSWORD_SPACE:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_PASSWORD_SPACE"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_PASSWORD_SPACE"));
                   break;
                 case PASSWORD_NO_DIGIT:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_PASSWORD_NO_DIGIT"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_PASSWORD_NO_DIGIT"));
                   break;
                 case PASSWORD_NO_UC:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_PASSWORD_NO_UC"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_PASSWORD_NO_UC"));
                   break;
                 case ALREADY_REGISTERED:
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_ALREADY_REGISTERED"));
+                  System.err
+                      .println(CLIClientMessages.getString("ERR_REGISTER_ALREADY_REGISTERED"));
                   break;
                 default: //handled, but never occurs
-                  System.err.println(CLIMessages.getString("ERR_REGISTER_UNKNOWN_OUTCOME"));
+                  System.err.println(CLIClientMessages.getString("ERR_REGISTER_UNKNOWN_OUTCOME"));
                   break;
               }
             }
