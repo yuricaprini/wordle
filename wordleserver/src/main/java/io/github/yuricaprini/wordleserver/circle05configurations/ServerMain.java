@@ -8,6 +8,7 @@
 // import java.nio.file.Files;
 // import java.nio.file.InvalidPathException;
 // import java.nio.file.Paths;
+// import java.util.ResourceBundle;
 // import com.google.gson.Gson;
 // import com.google.gson.JsonIOException;
 // import com.google.gson.JsonSyntaxException;
@@ -18,30 +19,20 @@
 //  */
 // public class ServerMain {
 
-//   public static final String OUT_SRV_HELLO = "*** Server started ***";
-//   public static final String OUT_STARTSHUTDOWN = "\n*** Starting shutdown procedure ***";
-//   public static final String OUT_SRV_GOODBYE = "*** Server terminated gracefully ***";
-//   public static final String ERR_SRV_INVALIDARGSNUMBER = "Err: invalid arguments number";
-//   public static final String ERR_SRV_OPENINGRESOURCES = "Err: opening resources";
-//   public static final String ERR_CONFIG_INVALIDPATH = "Err: invalid configuration file path";
-//   public static final String ERR_CONFIG_OPENINGJSONFILE = "Err: opening the configuration file";
-//   public static final String ERR_CONFIG_READINGJSONFILE = "Err: reading the configuration file";
-//   public static final String ERR_CONFIG_MALFORMEDJSONFILE = "Err: malformed configuration file";
-//   public static final String ERR_CONFIG_EMPTYFILE = "Err: empty configuration file";
-//   public static final String ERR_CONFIG_CORRECT = "Err: incorrect fields in configuration file";
-//   public static final String ERR_CONFIG_SECURITY = "Error: no access rights for configuration file";
-//   public static final String USAGE = "Usage: java -jar [WinsomeServer.jar] " + "[config.json] ";
+//   private static final String DEFAULTBUNDLENAME = "CLIServerMessages";
+//   private static final String DEFAULTCONFIGNAME = "server_config.json";
 //   public static final int MIN_SNAPSHOTINTERVAL = 1;
 
 //   public static void main(String[] args) {
+
+//     ResourceBundle CLIServerMessages = ResourceBundle.getBundle(DEFAULTBUNDLENAME);
 
 //     ServerServicesOrchestrator serverExecutor = null;
 //     ServerConfiguration serverConfiguration = null;
 
 //     if (args.length != 1) {
-//       System.err.println(ERR_SRV_INVALIDARGSNUMBER);
 //       System.err.println(USAGE);
-//       return;
+//       System.exit(1);
 //     }
 
 //     try {
@@ -149,8 +140,8 @@
 //    * @return the newly created server executor
 //    * @throws IOException
 //    */
-//   private static ServerServicesOrchestrator buildServerExecutor(ServerConfiguration serverConfiguration)
-//       throws IOException {
+//   private static ServerServicesOrchestrator buildServerExecutor(
+//       ServerConfiguration serverConfiguration) throws IOException {
 
 //     String targetDirectory = serverConfiguration.targetDirectory;
 //     int snapshotInterval = serverConfiguration.snapshotInterval;

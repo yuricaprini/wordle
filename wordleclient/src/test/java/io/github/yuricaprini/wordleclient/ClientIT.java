@@ -16,7 +16,7 @@ public class ClientIT {
   final String clientJar = "target/client-executable-jar-with-dependencies.jar";
   final String mockServerJar = "target/mockserver-executable-test-jar-with-dependencies.jar";
   final String clientConfig = "src/main/resources/client_config.json";
-  final static String DEFAULTBUNDLENAME = "CLIMessages";
+  final static String DEFAULTBUNDLENAME = "CLIClientMessages";
   static ResourceBundle CLIMessages = null;
 
   @BeforeAll

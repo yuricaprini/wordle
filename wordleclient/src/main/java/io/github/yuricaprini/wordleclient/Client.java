@@ -17,6 +17,10 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import io.github.yuricaprini.winsomeprotocol.remoteinterfaces.UserRegistrationRemoteService;
 
+/**
+ * A {@code Client} is responsible for handling user input, and sending the corresponding requests
+ * to the remote server.
+ */
 public class Client {
 
   private ClientConfiguration clientConfig;
@@ -27,6 +31,14 @@ public class Client {
     this.CLIClientMessages = CLIClientMessages;
   }
 
+  /**
+  * Loads the client configuration from a JSON file.
+  * 
+  * @param isCustomConfig true if the name of a custom configuration file is provided, false ow
+  * @param configName the name of the configuration file
+  * @throws NullPointerException if the configuration file can not be found
+  * @throws IOException if an I/O error occurs while reading the configuration file
+  */
   public void loadConfiguration(boolean isCustomConfig, String configName)
       throws NullPointerException, IOException {
 
@@ -46,7 +58,15 @@ public class Client {
     }
   }
 
-  public void executeInteractiveLoop() throws AccessException, RemoteException, NotBoundException {
+  /**
+  * Executes an interaction loop reading user input, interpreting the commands, sending the
+  * corresponding requests to the remote server, and receiving its responses.
+  *
+  * @throws AccessException if a security issue occurs while accessing the remote service
+  * @throws RemoteException if a communication-related issue occurs during the remote method call
+  * @throws NotBoundException if the specified name is not currently bound
+  */
+  public void executeInteractionLoop() throws AccessException, RemoteException, NotBoundException {
 
     try (Scanner scanner = new Scanner(System.in)) {
 
@@ -122,6 +142,12 @@ public class Client {
     }
   }
 
+  /**
+  * The {@code ClientConfiguration} class represents the configuration settings for the client.
+  * These configuration settings are used to establish the connection with the remote server.
+  * The client loads the configuration from a file and populates an instance of this class
+  * accordingly.
+  */
   public class ClientConfiguration {
 
     public String registryHost;
