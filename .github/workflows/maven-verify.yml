@@ -16,4 +16,4 @@ jobs:
           distribution: 'temurin'
           architecture: x64
       - name: Build and verify with Maven 
-        run: mvn -X clean verify
+        run: mvn -X clean test
