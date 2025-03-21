@@ -14,8 +14,9 @@ public class ClientIT {
   final String java = "java";
   final String jarFlag = "-jar";
   final String clientJar = "target/client-executable-jar-with-dependencies.jar";
-  final String mockServerJar = "target/mockserver-executable-test-jar-with-dependencies.jar";
   final String clientConfig = "src/main/resources/client_config.json";
+  final String mockServerJar = "target/mockserver-executable-test-jar-with-dependencies.jar";
+
   final static String DEFAULTBUNDLENAME = "CLIClientMessages";
   static ResourceBundle CLIMessages = null;
 
@@ -90,7 +91,7 @@ public class ClientIT {
     BufferedReader cerrreader = new BufferedReader(new InputStreamReader(c.getErrorStream()));
 
     assert (msreader.readLine().equals("MockServerUP"));
-    assert (coutreader.readLine().equals(CLIMessages.getString("OUT_CLIENT_RUNNING")));
+    assert (coutreader.readLine().equals(CLIMessages.getString("OUT_HELLO")));
 
     writeLine(cwriter, "register username Password1");
     assert (CLIMessages.getString("OUT_REGISTER_OK").equals(coutreader.readLine()));
@@ -106,22 +107,22 @@ public class ClientIT {
     assert (CLIMessages.getString("ERR_REGISTER_PASSWORD_NO_DIGIT").equals(cerrreader.readLine()));
     writeLine(cwriter, "register username no1uppercase");
     assert (CLIMessages.getString("ERR_REGISTER_PASSWORD_NO_UC").equals(cerrreader.readLine()));
-    writeLine(cwriter, "register username Password1"); //already registered
+    writeLine(cwriter, "register username Password1"); // already registered
     assert (CLIMessages.getString("ERR_REGISTER_ALREADY_REGISTERED").equals(cerrreader.readLine()));
 
-    /* 
-    Following two are handled before on client side because register command wants 2 args only.
-    Despite this, these cases are also managed on the server side.
-      
-    writeLine(cwriter, "register 1 Blank Password1");
-    assert (CLIMessages.getString("ERR_REGISTER_USERNAME_SPACE").equals(creader.readLine()));
-    writeLine(cwriter, "register username 1 Blank");
-    assert (CLIMessages.getString("ERR_REGISTER_PASSWORD_SPACE").equals(creader.readLine()));
-    
-    This never occurs, since the outcomes of the register command are constrained by compiler 
-    
-    assert (CLIMessages.getString("ERR_REGISTER_UNKNOWN_OUTCOME").equals(creader.readLine()));
-    */
+    /*
+     * Following two are handled before on client side because register command wants 2 args only.
+     * Despite this, these cases are also managed on the server side.
+     * 
+     * writeLine(cwriter, "register 1 Blank Password1"); assert
+     * (CLIMessages.getString("ERR_REGISTER_USERNAME_SPACE").equals(creader.readLine()));
+     * writeLine(cwriter, "register username 1 Blank"); assert
+     * (CLIMessages.getString("ERR_REGISTER_PASSWORD_SPACE").equals(creader.readLine()));
+     * 
+     * This never occurs, since the outcomes of the register command are constrained by compiler
+     * 
+     * assert (CLIMessages.getString("ERR_REGISTER_UNKNOWN_OUTCOME").equals(creader.readLine()));
+     */
 
     writeLine(cwriter, "quit");
     assert (c.waitFor() == 0);
@@ -134,7 +135,6 @@ public class ClientIT {
     cerrreader.close();
     cwriter.close();
   }
-
 
   private void writeLine(BufferedWriter writer, String command) throws IOException {
     writer.write(command + System.lineSeparator());

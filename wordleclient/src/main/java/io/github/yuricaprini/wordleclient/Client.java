@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import com.google.gson.Gson;
-import io.github.yuricaprini.winsomeprotocol.remoteinterfaces.UserRegistrationRemoteService;
+import io.github.yuricaprini.wordleprotocol.remoteinterfaces.remoteinterfaces.UserRegistrationRemoteService;
 
 /**
  * A {@code Client} is responsible for handling user input, and sending the corresponding requests

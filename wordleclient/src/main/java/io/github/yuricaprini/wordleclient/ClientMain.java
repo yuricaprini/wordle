@@ -6,8 +6,8 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 /**
- * The {@code ClientMain} class represents the entry point for the Wordle client application.
- * It handles the initialization of the client and the execution of the main program flow.
+ * The {@code ClientMain} class represents the entry point for the Wordle client application. It
+ * handles the initialization of the client and the execution of the main program flow.
  * 
  * @author Yuri Caprini
  */
@@ -42,7 +42,7 @@ public class ClientMain {
       System.exit(1);
     }
 
-    System.out.println(CLIClientMessages.getString("OUT_CLIENT_RUNNING"));
+    System.out.println(CLIClientMessages.getString("OUT_HELLO"));
 
     try {
       client.executeInteractionLoop();

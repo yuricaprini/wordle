@@ -1,0 +1,10 @@
+{
+  "registryPort": 1099,
+  "listeningPort": 5000,
+  "secretWordRefreshInterval": 10,
+  "authTokenSecretKey": "0ci40,-049=2cd952=95092cs-2c9=50",
+  "multicastGroup": "239.255.32.32",
+  "multicastPort": 4000,
+  "usersFileName": "users.json",
+  "_comment": "secretWordRefreshInterval is in minutes"
+}

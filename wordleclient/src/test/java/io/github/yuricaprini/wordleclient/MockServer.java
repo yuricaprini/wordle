@@ -7,7 +7,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Scanner;
-import io.github.yuricaprini.winsomeprotocol.remoteinterfaces.UserRegistrationRemoteService;
+import io.github.yuricaprini.wordleprotocol.remoteinterfaces.remoteinterfaces.UserRegistrationRemoteService;
 
 public class MockServer implements UserRegistrationRemoteService {
   private HashMap<String, String> userMap = new HashMap<String, String>();

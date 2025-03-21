@@ -1,194 +1,172 @@
-// package io.github.yuricaprini.wordleserver.circle05configurations;
+package io.github.yuricaprini.wordleserver.circle05configurations;
 
-// import java.io.IOException;
-// import java.io.Reader;
-// import java.net.InetSocketAddress;
-// import java.nio.channels.Selector;
-// import java.nio.channels.ServerSocketChannel;
-// import java.nio.file.Files;
-// import java.nio.file.InvalidPathException;
-// import java.nio.file.Paths;
-// import java.util.ResourceBundle;
-// import com.google.gson.Gson;
-// import com.google.gson.JsonIOException;
-// import com.google.gson.JsonSyntaxException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.net.InetSocketAddress;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.rmi.Remote;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Hashtable;
+import java.util.ResourceBundle;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import io.github.yuricaprini.wordleprotocol.auth.AuthToken;
+import io.github.yuricaprini.wordleprotocol.remoteinterfaces.Top3NotificationRemoteService;
+import io.github.yuricaprini.wordleprotocol.remoteinterfaces.UserRegistrationRemoteService;
+import io.github.yuricaprini.wordleserver.circle04frameworks.DispatcherService;
+import io.github.yuricaprini.wordleserver.circle04frameworks.ListenerService;
+import io.github.yuricaprini.wordleserver.circle04frameworks.PersistenceService;
+import io.github.yuricaprini.wordleserver.circle04frameworks.RemoteExposerService;
+import io.github.yuricaprini.wordleserver.circle04frameworks.SecretWordRefresherService;
 
-// /**
-//  * This is the Winsome server bootstrap class. It creates, initializes and starts the execution of
-//  * all the components needed to run the application.
-//  */
-// public class ServerMain {
+/**
+ * A {@code ServerMain} represents the Wordle {@link Server} bootstrap. It is responsible for 
+ * initializing all the components needed to run the server and for starting it up.
+ * 
+ * If there are no arguments the default server configuration 
+ * name is chosen. If there is one argument, it is considered as a custom configuration name. 
+ * If there are more than one, it prints an error message and exits.
+ * 
+ * @author Yuri Caprini
+ */
+public class ServerMain {
 
-//   private static final String DEFAULTBUNDLENAME = "CLIServerMessages";
-//   private static final String DEFAULTCONFIGNAME = "server_config.json";
-//   public static final int MIN_SNAPSHOTINTERVAL = 1;
+  private static final String DEFAULTBUNDLENAME = "CLIServerMessages";
+  private static final String DEFAULT_CONFIG_FILENAME = "server_config.json";
+  private static String customConfigName = null;
+  private static ResourceBundle CLIServerMessages;
 
-//   public static void main(String[] args) {
+  public static void main(String[] args) {
 
-//     ResourceBundle CLIServerMessages = ResourceBundle.getBundle(DEFAULTBUNDLENAME);
+    CLIServerMessages = ResourceBundle.getBundle(DEFAULTBUNDLENAME);
 
-//     ServerServicesOrchestrator serverExecutor = null;
-//     ServerConfiguration serverConfiguration = null;
+    if (args.length == 1)
+      customConfigName = args[0];
 
-//     if (args.length != 1) {
-//       System.err.println(USAGE);
-//       System.exit(1);
-//     }
+    if (args.length > 1) {
+      System.err.println(CLIServerMessages.getString("ERR_USAGE"));
+      System.exit(1);
+    }
 
-//     try {
-//       serverConfiguration = loadConfiguration(args[0]);
+    ServerConfiguration serverConfiguration = null;
+    try {
+      serverConfiguration = loadServerConfiguration();
+      AuthToken.init(serverConfiguration.authTokenSecretKey, 3600000); // 1 hour
+      AppConfig.init(serverConfiguration);
 
-//     } catch (InvalidPathException ipe) {
-//       System.err.println(ERR_CONFIG_INVALIDPATH);
-//       System.err.println(ipe.getMessage());
-//       System.err.println(USAGE);
-//       return;
+    } catch (FileNotFoundException e) {
+      System.err.println(CLIServerMessages.getString("ERR_CONFIGNOTFOUND"));
+      e.printStackTrace();
+      System.exit(1);
+    } catch (JsonParseException e) {
+      System.err.println(CLIServerMessages.getString("ERR_CONFIGPARSINGFAIL"));
+      e.printStackTrace();
+      System.exit(1);
+    } catch (IOException e) {
+      System.err.println(CLIServerMessages.getString("ERR_CONFIGREADINGFAIL"));
+      e.printStackTrace();
+      System.exit(1);
+    }
 
-//     } catch (IOException ioe) {
-//       System.err.println(ERR_CONFIG_OPENINGJSONFILE);
-//       System.err.println(ioe.getMessage());
-//       System.err.println(USAGE);
-//       return;
+    try {
 
-//     } catch (SecurityException se) {
-//       System.err.println(ERR_CONFIG_SECURITY);
-//       System.err.println(se.getMessage());
-//       System.err.println(USAGE);
-//       return;
+      Selector selector = Selector.open();
+      ServerSocketChannel listeningChannel;
+      listeningChannel = ServerSocketChannel.open();
+      listeningChannel.bind(new InetSocketAddress(serverConfiguration.listeningPort));
 
-//     } catch (JsonIOException jIOe) {
-//       System.err.println(ERR_CONFIG_READINGJSONFILE);
-//       System.err.println(jIOe.getMessage());
-//       System.err.println(USAGE);
-//       return;
-//     } catch (JsonSyntaxException jse) {
-//       System.err.println(ERR_CONFIG_MALFORMEDJSONFILE);
-//       System.err.println(jse.getMessage());
-//       System.err.println(USAGE);
-//       return;
-//     }
+      DispatcherService dispatcher = AppConfig.getNewDispatcherService(selector);
+      ListenerService listener = AppConfig.getNewListenerService(listeningChannel, dispatcher);
 
-//     if (serverConfiguration == null) {
-//       System.err.println(ERR_CONFIG_EMPTYFILE);
-//       System.err.println(USAGE);
-//       return;
-//     }
+      Hashtable<String, Remote> remoteObjs = new Hashtable<String, Remote>();
+      remoteObjs.put(UserRegistrationRemoteService.class.getSimpleName(),
+          AppConfig.getNewUserRegistrationRemoteService());
+      remoteObjs.put(Top3NotificationRemoteService.class.getSimpleName(),
+          AppConfig.getNewTop3NotificationRemoteService());
+      RemoteExposerService remoteExposer =
+          AppConfig.getNewRemoteExposerService(remoteObjs, serverConfiguration.registryPort);
 
-//     if (!checkConfiguration(serverConfiguration)) {
-//       System.err.println(ERR_CONFIG_CORRECT);
-//       System.err.println(USAGE);
-//       return;
-//     }
+      SecretWordRefresherService secretWordRefresherService =
+          AppConfig.getNewSecretWordRefresherService(serverConfiguration.secretWordRefreshInterval);
 
-//     try {
-//       serverExecutor = buildServerExecutor(serverConfiguration);
-//     } catch (IOException e) {
-//       System.err.println(ERR_SRV_OPENINGRESOURCES);
-//       System.err.println(e.getMessage());
-//       System.err.println(USAGE);
-//       return;
-//     }
-//     configureShutDown(serverExecutor);
+      PersistenceService persistenceService = AppConfig.getNewPersistenceService();
 
-//     System.out.println(OUT_SRV_HELLO);
-//     serverExecutor.runServices();
-//   }
+      Server server = new Server.Builder(CLIServerMessages).addService(persistenceService)
+          .addService(secretWordRefresherService).addService(remoteExposer).addService(dispatcher)
+          .addService(listener).build();
 
-//   // ------------------------------------------------------------------------------------------------
-//   // Private convenience methods
-//   // ------------------------------------------------------------------------------------------------
+      configureShutdownHook(server);
 
-//   /**
-//    * Loads the server configuration file from {@code configFilePath}
-//    * 
-//    * @param configFilePath the file path string
-//    * @return the object representing the server configuration
-//    * @throws InvalidPathException if the path string cannot be converted to a {@code Path}
-//    * @throws IOException if an I/O error occurs opening the file
-//    * @throws SecurityException if there are no rights to read the file
-//    * @throws JsonIoException if error occurs reading the file
-//    * @throws JsonSyntaxException if the json representation of server configuration is malformed
-//    */
-//   private static ServerConfiguration loadConfiguration(String configFilePath)
-//       throws InvalidPathException, IOException, SecurityException, JsonIOException,
-//       JsonSyntaxException {
+      server.run();
 
-//     Gson gson = new Gson();
-//     try (Reader reader = Files.newBufferedReader(Paths.get(configFilePath));) {
-//       return gson.fromJson(reader, ServerConfiguration.class);
-//     }
-//   }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-//   /**
-//    * Checks if {@code serverConfiguration} fields are been properly filled: no fields should be null
-//    * or have a invalid value for business logic.
-//    * 
-//    * @param serverConfiguration the object representing the server configuration
-//    * @return {@code true} if all {@code serverConfiguration} fields are !=null and
-//    *         {@code serverConfiguration.snapshotInterval >= } {@value #MIN_SNAPSHOTINTERVAL}
-//    */
-//   private static boolean checkConfiguration(ServerConfiguration serverConfiguration) {
-//     return (serverConfiguration.targetDirectory != null
-//         && serverConfiguration.snapshotInterval != null
-//         && serverConfiguration.snapshotInterval >= MIN_SNAPSHOTINTERVAL);
-//   }
+  /**
+  * Loads the server configuration from a JSON file. Uses the file name provided as a command line
+  * argument if present, otherwise uses the default configuration name.
+  *
+  * @return ServerConfiguration object containing the server configuration.
+  * @throws FileNotFoundException if the configuration file is not found.
+  * @throws JsonParseException    if an error occurs during JSON file parsing.
+  * @throws IOException           if an I/O error occurs while reading the file.
+  */
+  private static ServerConfiguration loadServerConfiguration()
+      throws FileNotFoundException, JsonParseException, IOException {
 
-//   /**
-//    * Creates and initializes all the components needed to create a server executor and then creates
-//    * it.
-//    * 
-//    * @return the newly created server executor
-//    * @throws IOException
-//    */
-//   private static ServerServicesOrchestrator buildServerExecutor(
-//       ServerConfiguration serverConfiguration) throws IOException {
+    try (Reader reader = customConfigName != null ? new FileReader(customConfigName)
+        : new BufferedReader(new InputStreamReader(Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream(DEFAULT_CONFIG_FILENAME)));) {
 
-//     String targetDirectory = serverConfiguration.targetDirectory;
-//     int snapshotInterval = serverConfiguration.snapshotInterval;
+      return new GsonBuilder().registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
+          .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+          .setDateFormat("HH:mm:ss").create().fromJson(reader, ServerConfiguration.class);
+    }
+  }
 
-//     PersistenceService persistenceService = FactoryProvider.getPersistenceServiceFactory()
-//         .createPersistenceService(FactoryProvider.getServerStatusFactory().createServerStatus(),
-//             snapshotInterval, targetDirectory);
+  /**
+  * Configures a shutdown hook to handle the server shutdown gracefully when Ctrl+C is pressed.
+  *
+  * @param server the server to be shut down.
+  */
+  private static void configureShutdownHook(Server server) {
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      try {
+        server.shutdown();
+      } catch (InterruptedException e) {
+        //never happens, since no one interrupts the shutdown thread
+      }
+    }));
+  }
 
-//     RemoteServicesExposer remoteServicesExposer = FactoryProvider.getRemoteServicesExposerFactory()
-//         .createRemoteServicesExposer(FactoryProvider.getRemoteUserRegistrationFactory()
-//             .createUserRegistrationRemoteService(), serverConfiguration.registryPort);
+  private static class LocalTimeSerializer implements JsonSerializer<LocalTime> {
+    @Override
+    public JsonPrimitive serialize(LocalTime localTime, Type type,
+        JsonSerializationContext jsonSerializationContext) {
+      return new JsonPrimitive(localTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+    }
+  }
 
-//     NIODispatcher nioDispatcher = FactoryProvider.getNIODispatcherFactory()
-//         .createNIODispatcher(Selector.open(), FactoryProvider.getChannelHandlerFactory());
-
-//     ServerSocketChannel listeningChannel = ServerSocketChannel.open();
-//     listeningChannel.bind(new InetSocketAddress(serverConfiguration.serverTCPAddress,
-//         serverConfiguration.serverTCPPort));
-//     NIOListener nioListener =
-//         FactoryProvider.getNIOListenerFactory().createNIOListener(listeningChannel, nioDispatcher);
-
-//     return new ServerServicesOrchestrator(persistenceService, remoteServicesExposer, nioListener,
-//         nioDispatcher);
-//   }
-
-//   /**
-//    * Configures the sequence of actions to be performed when server termination is invoked.
-//    * 
-//    * @param serverExecutor the {@code ServerExecutor} called to shutdown services when server
-//    *        termination is invoked
-//    */
-//   private static void configureShutDown(ServerServicesOrchestrator serverExecutor) {
-
-//     final ServerServicesOrchestrator finalServerExecutor = serverExecutor;
-//     Thread gracefulShutDown = new Thread(new Runnable() {
-//       @Override
-//       public void run() {
-//         System.out.println(OUT_STARTSHUTDOWN);
-//         try {
-//           finalServerExecutor.shutdownServices();
-//         } catch (InterruptedException e) {
-//           // this branch is never reached since after shutdown hook is called
-//           // no other interrupts are taken by JVM
-//         }
-//         System.out.println(OUT_SRV_GOODBYE);
-//       }
-//     });
-//     Runtime.getRuntime().addShutdownHook(gracefulShutDown);
-//   }
-// }
+  private static class LocalTimeDeserializer implements JsonDeserializer<LocalTime> {
+    @Override
+    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+        throws JsonParseException {
+      return LocalTime.parse(json.getAsString(), DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+  }
+}

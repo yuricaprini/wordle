@@ -1,0 +1,7 @@
+io/github/yuricaprini/unit/WordleRequestTest.class
+io/github/yuricaprini/unit/InputQueueTest.class
+io/github/yuricaprini/unit/WordDTOTest.class
+io/github/yuricaprini/unit/AuthTokenTest.class
+io/github/yuricaprini/unit/OutputQueueTest.class
+io/github/yuricaprini/unit/CredentialsDTOTest.class
+io/github/yuricaprini/unit/WordleResponseTest.class
