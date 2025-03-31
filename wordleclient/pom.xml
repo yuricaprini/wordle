@@ -23,6 +23,11 @@
       <artifactId>wordleprotocol</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.fusesource.jansi</groupId>
+      <artifactId>jansi</artifactId>
+      <version>2.4.1</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -64,29 +69,6 @@
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
               <finalName>client-executable</finalName>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <targetPath>/</targetPath>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>io.github.yuricaprini.wordleclient.MockServer</mainClass>
-                </manifest>
-              </archive>
-              <descriptor>/src/assembly/test-jar-with-dependecies.xml</descriptor>
-              <finalName>mockserver-executable</finalName>
             </configuration>
           </execution>
         </executions>

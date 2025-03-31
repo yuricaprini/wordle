@@ -1,0 +1,57 @@
+[
+{
+  "username": {
+    "value": "Yuri"
+  },
+  "password": {
+    "value": "90Yuri90"
+  },
+  "lastGame": {
+    "secretWord": {
+      "number": 1,
+      "translation": "idiocrasis",
+      "value": "idiocrasis"
+    },
+    "clues": [
+      {
+        "word": {
+          "value": "abalienate"
+        },
+        "wordColors": "?X?X?XX?XX",
+        "allGreen": false
+      },
+      {
+        "word": {
+          "value": "idiocrasis"
+        },
+        "wordColors": "++++++++++",
+        "allGreen": true
+      }
+    ],
+    "isStarted": true
+  },
+  "stats": {
+    "totalGames": 1,
+    "wonGames": 1,
+    "currentStreak": 1,
+    "maxStreak": 1,
+    "guessDistribution": {
+      "1": 0,
+      "2": 1,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    },
+    "oldscore": {
+      "value": 0
+    }
+  }
+}
+]

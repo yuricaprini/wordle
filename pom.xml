@@ -10,6 +10,7 @@
   <version>1.0</version>
   <name>wordle</name>
   <packaging>pom</packaging>
+  <url>http://localhost:8080</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,17 +20,22 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>2.3.1</version>
+    </dependency>
 
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.9.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.auth0</groupId>
-      <artifactId>java-jwt</artifactId>
-      <version>4.1.0</version>
     </dependency>
 
     <dependency>
@@ -83,13 +89,9 @@
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
           <executions>
-          <execution>
+            <execution>
               <id>default-jar</id>
-              <phase>none</phase>
-              <configuration>
-                <finalName>unwanted</finalName>
-                <classifier>unwanted</classifier>
-              </configuration>
+              <phase>package</phase>
             </execution>
           </executions>
         </plugin>
@@ -108,23 +110,59 @@
         see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.7.1</version>
         </plugin>
 
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
+
 
       </plugins>
     </pluginManagement>
   </build>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.0</version>
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <inherited>false</inherited>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>default</id>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <distributionManagement>
+    <site>
+      <id>staging</id>
+      <url>file://${project.build.directory}/staging</url>
+    </site>
+  </distributionManagement>
+
   <modules>
     <module>wordleserver</module>
     <module>wordleclient</module>
     <module>wordleprotocol</module>
+
   </modules>
 
 </project>
