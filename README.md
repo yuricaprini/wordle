@@ -1,3 +1,5 @@
+#Wordle-overengineered
+##Overview
 An over-engineered implementation of the popular Wordle game.
 This project uses Wordle as a pretext to experiment with advanced software architecture and distributed systems concepts. It is built following the Clean Architecture principles, ensuring modularity and maintainability. The system is structured into three main modules (protocol, server, and client) and leverages multiple communication paradigms, including RMI (Remote Method Invocation), HTTP requests/responses, and UDP packets.
 
